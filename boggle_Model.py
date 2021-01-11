@@ -10,12 +10,12 @@ GAME_DURATION = 180
 
 class Timer:
     """this class creates a countdown for game duration from the time it was initialized"""
-    def _init_(self):
+    def __init__(self):
         self.start_time = time.time()
         self.game_duration = GAME_DURATION
 
     def remaining_time(self):
-        return self.game_duration - (time.time() - self.start_time)
+        return int(self.game_duration - (time.time() - self.start_time))
 
 
 class ScoreCalculator:
@@ -65,3 +65,6 @@ class StepRecommender:
         last_step = path[-1]
         step_neighbors = self.get_all_neighbors(last_step)
         return [coord for coord in step_neighbors if coord not in path]
+
+
+
