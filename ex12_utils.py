@@ -1,6 +1,7 @@
 import boggle_board_randomizer
 import itertools
 
+
 BOARD_COORDINATES = [(0, 0), (0, 1), (0, 2), (0, 3), (1, 0), (1, 1), (1, 2), (1, 3),
                      (2, 0), (2, 1), (2, 2), (2, 3), (3, 0), (3, 1), (3, 2), (3, 3)]
 
@@ -45,13 +46,13 @@ def get_neighbors(x, y):
 # ['E', 'R', 'A', 'D'],
 # ['N', 'E', 'T', 'I'],
 # ['C', 'E', 'QU', 'H']]
+
+# for row in board:
+#     print(row)
 #
-# # for row in board:
-# #     print(row)
-# #
-# # path = [(0,0),(0,1),(0,2),(0,3)]
-# #
-# # print(is_valid_path(board, path, dict_list))
+# path = [(0,0),(0,1),(0,2),(0,3)]
+#
+# print(is_valid_path(board, path, dict_list))
 
 
 def find_length_n_words(n, board, words):
@@ -67,11 +68,6 @@ def find_length_n_words(n, board, words):
                 valid_paths_words.append((word, list(path)))
     return valid_paths_words
 
-# print(find_length_n_words(5, board, dict_list))
-
-
-
-
-
+#print(find_length_n_words(4, board, dict_list))
 
 
