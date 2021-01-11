@@ -4,33 +4,26 @@ import ex12_utils
 WORD_FILE_PATH = "boggle_dict.txt"
 
 
-class BoggleModel:
+class ScoreCalculator:
+    """this class calculates the score for a list of words"""
     def __init__(self):
-        self.__game_words = ex12_utils.load_words_dict(WORD_FILE_PATH)
-        self.__board = boggle_board_randomizer.randomize_board()
-        self.__timer = None
-        self.__current_path = []
-        self.__current_word = None
-        self.__score = 0
+        self.words_dict = ex12_utils.load_words_dict(WORD_FILE_PATH) # a list of valid words that can be found in board
 
-    def get_board(self):
-        return self.__board
+    def get_score(self, word):
+        """gets a word and calculates the score of that word.
+        If the word is not in the dictionary, return 0. Otherwise, return len(word) ^ 2"""
+        if word in self.words_dict:
+            return len(word) ** 2
+        else:
+            return 0
 
-    def init_board(self):
-        self.__board = boggle_board_randomizer.randomize_board()
+    def get_game_score(self, words_lst):
+        """gets a list of str and calculates the score of that list:
+        each first appearance of word receives a score calculated by len(word) ** 2
+        each further appearance of word receives is not scored"""
+        word_set = set(words_lst)
+        score = 0
+        for word in word_set:
+            score += self.get_score(word)
+        return score
 
-    def set_score(self):
-        add = len(self.__current_word) ** 2
-        self.__score += add
-
-    def check_path(self):
-        pass
-
-    def start_timer(self):
-        pass
-
-    def add_to_cur_path(self, coordinate):
-        self.__current_path.append(coordinate)
-
-    def clear_cur_path(self):
-        self.__current_path = []
