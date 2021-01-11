@@ -62,9 +62,60 @@ class StepRecommender:
     def get_valid_neighbors(self, path):
         """path: List[tuples].
         get neighbors of the last tuple in path and returns the neighbors that are not already in the path."""
+        if path == []:
+            return self.board_coordinates
         last_step = path[-1]
         step_neighbors = self.get_all_neighbors(last_step)
         return [coord for coord in step_neighbors if coord not in path]
+
+
+class Game:
+    """this class manages a boggle game"""
+    def __init__(self):
+        self.board = boggle_board_randomizer.randomize_board()
+        self.timer = None
+        self.game_score = 0
+        self.score_calculator = ScoreCalculator()
+        self.current_path = []
+        self.check_path = False
+        self.found_words = []
+        self.steprecommender = StepRecommender()
+
+    def get_path(self):
+        """this function keeps receiving coordinates from user until they choose to check the word
+        (meaning the word in the current path)"""
+        while self.check_path is False:
+            possible_steps = self.steprecommender.get_valid_neighbors(self.current_path)
+            print("the valid next steps are", possible_steps)
+            input_str = input("what's your next step?")
+            next_step = (int(input_str[0]), int(input_str[1]))
+            if next_step in possible_steps:
+                self.current_path.append(next_step)
+            else:
+                print("the step isn't valid")
+            check_input = input("would you like to check this word? enter Y/N")
+            if check_input == "Y":
+                self.check_path = True
+        # print(self.current_path) # just a test
+
+    def from_current_path_get_word(self):
+        """from current_path returns a str according to the matching str on board"""
+        word = ""
+        for coord in self.current_path:
+            x, y = coord
+            word += self.board[x][y]
+        return word
+
+
+
+# game = Game()
+#
+# game.get_path()
+# print(game.from_path_get_word())
+
+
+
+
 
 
 
