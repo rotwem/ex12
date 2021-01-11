@@ -1,9 +1,21 @@
 import boggle_board_randomizer
 import ex12_utils
+import time
 
 WORD_FILE_PATH = "boggle_dict.txt"
 BOARD_X_LEN = 4
 BOARD_Y_LEN = 4
+GAME_DURATION = 180
+
+
+class Timer:
+    """this class creates a countdown for game duration from the time it was initialized"""
+    def _init_(self):
+        self.start_time = time.time()
+        self.game_duration = GAME_DURATION
+
+    def remaining_time(self):
+        return self.game_duration - (time.time() - self.start_time)
 
 
 class ScoreCalculator:
