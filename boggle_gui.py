@@ -16,17 +16,24 @@ BUTTON_STYLE = {"font": ("Courier", 40),
                 "bg": NEUTRAL_BG}
 
 
-class LettersGrid:
+class BoggleGui:
     """This class only manages the gui for the letters grid of buttons"""
+    def __init__(self, model: Game):
+        self.root = tki.Tk()  # main window of the game
 
-    def __init__(self, model: Game, root):
-        self.root = root  # main window of the game
+        # LettersGrid
         self.model = model  # List[List[str]]
-        self.frame = tki.Frame(root, bg=NEUTRAL_BG, highlightbackground=GAME_BLACK_COLOR, highlightthickness=5,
+        self.frame = tki.Frame(self.root, bg=NEUTRAL_BG, highlightbackground=GAME_BLACK_COLOR, highlightthickness=5,
                                width=10, height=10)
         self.frame.pack()
         self.buttons = dict()
         self.current_path = []
+
+        # countdown
+        self.time_var = tki.StringVar()
+        self.label = tki.Label(self.root, bg=GAME_ORANGE_COLOR, textvariable=self.time_var, font=("Courier", 20))
+        self.label.pack()
+        self.root.after(10, self.set_remaining_time)
 
     def set_buttons_grid(self):
         """ for each coordinate create a button and place in grid according to coordinate"""
@@ -69,26 +76,22 @@ class LettersGrid:
         for button in self.buttons.values():
             button.configure(bg=NEUTRAL_BG)
 
+    def set_remaining_time(self):
+        """set the time string in countdown label"""
+        self.time_var.set(self.remaining_time_string(self.model.remaining_game_time))
+        self.root.after(10, self.set_remaining_time)
+
+    def remaining_time_string(self, remaining_time):
+        minutes = remaining_time // 60
+        seconds = remaining_time % 60
+        return str(minutes) + ":" + str(seconds)
+
     def run(self):
         # just for test
         self.set_buttons_grid()
+        self.model.start_game()
         self.frame.mainloop()
 
-
-class Countdown:
-    """This class only manages the presentation of the time remaining for game"""
-
-    def __init__(self, root, timer):
-        self.root = root
-        self.timer = timer
-        self.time_var = tki.StringVar()
-        self.label = tki.Label(root, bg=GAME_ORANGE_COLOR, textvariable=self.time_var, font=("Courier", 20))
-        self.label.pack()
-        self.root.after(10, self.set_remaining_time)
-
-    def set_remaining_time(self):
-        self.time_var.set(self.timer.remaining_time_string())
-        self.root.after(10, self.set_remaining_time)
 
 
 board = [['B', 'A', 'C', 'Y'],
@@ -99,10 +102,6 @@ board = [['B', 'A', 'C', 'Y'],
 
 model = Game(board=board)
 
-root = tki.Tk()
-LG = LettersGrid(model, root)
-timer = Timer()
-timer.start()
-CTD = Countdown(root, timer)
-root.mainloop()
+BG = BoggleGui(model)
+BG.run()
 # LG.run()

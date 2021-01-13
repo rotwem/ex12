@@ -19,12 +19,6 @@ class Timer:
             raise ValueError("Game was not started!")
         return int(self.game_duration - (time.time() - self.start_time))
 
-    def remaining_time_string(self):
-        remaining_time = self.remaining_time()
-        minutes = remaining_time // 60
-        seconds = remaining_time % 60
-        return str(minutes) + ":" + str(seconds)
-
     def start(self):
         self.start_time = time.time()
 
@@ -96,6 +90,9 @@ class Game:
 
     def get_letter(self, row, col):
         return self.board[row][col]
+
+    def start_game(self):
+        self.timer.start()
 
     @property
     def score(self):
