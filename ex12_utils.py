@@ -56,6 +56,8 @@ def get_neighbors(x, y):
 
 
 def find_length_n_words(n, board, words):
+    """returns all the words with n length that are in board
+    notice that the len is according to how many coordinates not how many letters are in coordinate"""
     valid_paths_words = []
     for path in itertools.combinations(BOARD_COORDINATES, n):
         if valid_path(path):

@@ -1,69 +1,103 @@
 import tkinter as tki
 import boggle_board_randomizer
-from boggle_Model import BoggleModel
+from boggle_Model import *
 
-BUTTONS_COLOR = "azure"
-BUTTONS_HOVER_COLOR = "powder blue"
-BUTTONS_ACTIVE_COLOR = "red"
-BUTTON_STYLE = {"font": ("Courier", 30),
+# game colors:
+NEUTRAL_BG = 'white smoke'
+CLICKED_BUTTON_BG = 'AntiqueWhite4'
+POSSIBLE_NEXT_STEP_BG = 'gold'
+GAME_ORANGE_COLOR = 'DarkOrange1'
+GAME_BLACK_COLOR = 'black'
+BOARD_X_LEN = 4
+BOARD_Y_LEN = 4
+BUTTON_STYLE = {"font": ("Courier", 40),
                 "borderwidth": 1,
                 "relief": tki.RAISED,
-                "bg": BUTTONS_COLOR,
-                "activebackground": BUTTONS_ACTIVE_COLOR}
+                "bg": NEUTRAL_BG}
 
-class BoggleGUI:
-    _buttons = {}
 
-    def __init__(self):
-        self.model = BoggleModel()
-        root = tki.Tk()
-        root.title("Boggle by Poli & Rotem")
-        root.resizable(False, False)
-        self.__main_window = root
-        self._display_label = tki.Label(self.__main_window, font=("Courier", 30), width=23, relief="ridge")
-        self._display_label.pack(side=tki.TOP, fill=tki.BOTH)
-        self._lower_frame = tki.Frame(self.__main_window)
-        self._lower_frame.pack(side=tki.TOP, fill=tki.BOTH, expand=True)
-        self._create_words_board(self.model.get_board())
-        self._score_label = tki.Label(self.__main_window, font=("Courier", 30), width=23, relief="ridge")
-        self._score_label.pack(side=tki.BOTTOM, fill=tki.BOTH)
-        self._score_label["text"] = "0"
+class LettersGrid:
+    """This class only manages the gui for the letters grid of buttons"""
+    def __init__(self, board, root):
+        self.root = root # main window of the game
+        self.board = board # List[List[str]]
+        self.frame = tki.Frame(root, bg=NEUTRAL_BG, highlightbackground=GAME_BLACK_COLOR, highlightthickness=5,
+                               width=10, height=10)
+        self.frame.pack()
+        self.buttons = dict()
 
-    def run(self):
-        self.__main_window.mainloop()
+    def set_buttons_grid(self):
+        """ for each coordinate create a button and place in grid according to coordinate"""
+        for i in range(BOARD_Y_LEN):
+            tki.Grid.columnconfigure(self.frame, i, weight=1)
 
-    def set_display(self, display_text: str) -> None:
-        self._display_label["text"] = display_text
+        for i in range(BOARD_X_LEN):
+            tki.Grid.rowconfigure(self.frame, i, weight=1)
 
-    def _create_words_board(self, board) -> None:
-        for i in range(4):
-            tki.Grid.columnconfigure(self._lower_frame, i, weight=1)  # type: ignore
+        for row in range(BOARD_Y_LEN):
+            for col in range(BOARD_X_LEN):
+                self._make_button(self.board[row][col], row, col)
 
-        for i in range(4):
-            tki.Grid.rowconfigure(self._lower_frame, i, weight=1)  # type: ignore
 
-        for i in range(4):
-            for j in range(4):
-                self._make_button(board[i][j], i, j)
-
-    def _make_button(self, button_char: str, row: int, col: int, rowspan: int = 1, columnspan: int = 1):
-        button = tki.Button(self._lower_frame, text=button_char, **BUTTON_STYLE)
+    def _make_button(self, button_char, row, col, rowspan=1, columnspan=1):
+        """create button for each coord in board and binds click event to changing bg color"""
+        button = tki.Button(self.frame, text=button_char, **BUTTON_STYLE)
         button.grid(row=row, column=col, rowspan=rowspan, columnspan=columnspan, sticky=tki.NSEW)
-        self._buttons[button_char] = button
+        self.buttons[(row, col)] = button
 
-        def _on_enter(event):
-            button['background'] = BUTTONS_HOVER_COLOR
+        def change_clicked_button(event):
+            button['background'] = CLICKED_BUTTON_BG
 
-        def _on_leave(event):
-            button['background'] = BUTTONS_COLOR
+        button.bind("<Button>", change_clicked_button)
 
-        button.bind("<Enter>", _on_enter)
-        button.bind("<Leave>", _on_leave)
         return button
 
+    def color_possible_steps(self, possible_steps):
+        """color the possible next steps in a different color
+        possible_steps: List[tuples]"""
+        for coord in possible_steps:
+            self.buttons[coord].configure(bg=POSSIBLE_NEXT_STEP_BG)
+
+    def reset_buttons_color(self):
+        """resets the buttons to neutral color"""
+        for button in self.buttons.values():
+            button.configure(bg=NEUTRAL_BG)
+
+    def run(self):
+        # just for test
+        self.set_buttons_grid()
+        self.color_possible_steps([(0,0),(1,1),(2,2),(3,3)])
+        self.reset_buttons_color()
+        self.frame.mainloop()
+
+class Countdown:
+    """This class only manages the presentation of the time remaining for game"""
+    def __init__(self, root, timer):
+        self.timer = timer
+        self.root = root
+        self.label = tki.Label(self.root, font=("Courier", 30), bg=GAME_ORANGE_COLOR, width=23, relief="ridge")
+        self.label.pack()
+
+    def convert_seconds_to_minutes(self):
+        pass
+
+    def display_countdown(self):
+        self.label.configure(text=str(self.timer.remaining_time()))
+        self.label.after(10, func=self.display_countdown())
 
 
-if __name__ == "__main__":
-    cg = BoggleGUI()
-    cg.set_display("TEST MODE")
-    cg.run()
+
+
+board = [['B', 'A', 'C', 'Y'],
+['E', 'R', 'A', 'D'],
+['N', 'E', 'T', 'I'],
+['C', 'E', 'QU', 'H']]
+
+root = tki.Tk()
+LG = LettersGrid(board, root)
+timer = Timer()
+CTD = Countdown(root, timer)
+CTD.display_countdown()
+
+
+

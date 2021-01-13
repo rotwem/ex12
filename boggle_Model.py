@@ -46,7 +46,6 @@ class ScoreCalculator:
 class StepRecommender:
     """This class gets a path(list[tuples]) ,where the last tuple is the last step taken,
     and returns the next possible steps"""
-
     def __init__(self):
         self.board_coordinates = []
         for i in range(BOARD_X_LEN):
@@ -62,7 +61,7 @@ class StepRecommender:
     def get_valid_neighbors(self, path):
         """path: List[tuples].
         get neighbors of the last tuple in path and returns the neighbors that are not already in the path."""
-        if path == []:
+        if not path:
             return self.board_coordinates
         last_step = path[-1]
         step_neighbors = self.get_all_neighbors(last_step)
@@ -81,7 +80,7 @@ class Game:
         self.found_words = []
         self.steprecommender = StepRecommender()
 
-    def get_path(self):
+    def create_current_path(self):
         """this function keeps receiving coordinates from user until they choose to check the word
         (meaning the word in the current path)"""
         while self.check_path is False:
@@ -107,11 +106,11 @@ class Game:
         return word
 
 
-
+#
 # game = Game()
 #
-# game.get_path()
-# print(game.from_path_get_word())
+# game.create_current_path()
+# print(game.from_current_path_get_word())
 
 
 
