@@ -10,12 +10,17 @@ GAME_DURATION = 180
 
 class Timer:
     """this class creates a countdown for game duration from the time it was initialized"""
-    def __init__(self):
-        self.start_time = time.time()
-        self.game_duration = GAME_DURATION
+    def __init__(self, game_duration=GAME_DURATION):
+        self.start_time = None
+        self.game_duration = game_duration
 
     def remaining_time(self):
+        if self.start_time is None:
+            raise ValueError("Game was not started!")
         return int(self.game_duration - (time.time() - self.start_time))
+
+    def start(self):
+        self.start_time = time.time()
 
 
 class ScoreCalculator:
@@ -46,23 +51,28 @@ class ScoreCalculator:
 class StepRecommender:
     """This class gets a path(list[tuples]) ,where the last tuple is the last step taken,
     and returns the next possible steps"""
-    def __init__(self):
-        self.board_coordinates = []
-        for i in range(BOARD_X_LEN):
-            for j in range(BOARD_Y_LEN):
-                self.board_coordinates.append((i, j))
-
     def get_all_neighbors(self, coordinate):
         """calculate all the neighbors coordinates in the board (regardless if they were already clicked or not)"""
         x, y = coordinate
         potential_neighbors = ex12_utils.get_neighbors(x, y)
-        return [coord for coord in potential_neighbors if coord in self.board_coordinates]
+        return [coord for coord in potential_neighbors if self._valid_coordinates(coord)]
+
+    def _valid_coordinates(self, coordinate):
+        """check if coordinate in board limits"""
+        return 0 <= coordinate[0] < BOARD_X_LEN and 0 <= coordinate[1] < BOARD_Y_LEN
+
+    def _board_coordinates(self):
+        board_coordinates = []
+        for i in range(BOARD_X_LEN):
+            for j in range(BOARD_Y_LEN):
+                board_coordinates.append((i, j))
+        return board_coordinates
 
     def get_valid_neighbors(self, path):
         """path: List[tuples].
         get neighbors of the last tuple in path and returns the neighbors that are not already in the path."""
         if not path:
-            return self.board_coordinates
+            return self._board_coordinates()
         last_step = path[-1]
         step_neighbors = self.get_all_neighbors(last_step)
         return [coord for coord in step_neighbors if coord not in path]
@@ -71,25 +81,27 @@ class StepRecommender:
 class Game:
     """this class manages a boggle game"""
     def __init__(self):
+
         self.board = boggle_board_randomizer.randomize_board()
-        self.timer = None
-        self.game_score = 0
+        self.timer = Timer()
         self.score_calculator = ScoreCalculator()
+        self.steprecommender = StepRecommender()
+
+        self.game_score = 0
         self.current_path = []
         self.check_path = False
         self.found_words = []
-        self.steprecommender = StepRecommender()
 
-    def create_current_path(self):
+    def create_current_path(self, current_path):
         """this function keeps receiving coordinates from user until they choose to check the word
         (meaning the word in the current path)"""
         while self.check_path is False:
-            possible_steps = self.steprecommender.get_valid_neighbors(self.current_path)
+            possible_steps = self.steprecommender.get_valid_neighbors(current_path)
             print("the valid next steps are", possible_steps)
             input_str = input("what's your next step?")
             next_step = (int(input_str[0]), int(input_str[1]))
             if next_step in possible_steps:
-                self.current_path.append(next_step)
+                current_path.append(next_step)
             else:
                 print("the step isn't valid")
             check_input = input("would you like to check this word? enter Y/N")
@@ -106,11 +118,11 @@ class Game:
         return word
 
 
-#
-# game = Game()
-#
-# game.create_current_path()
-# print(game.from_current_path_get_word())
+
+game = Game()
+
+game.create_current_path()
+print(game.from_current_path_get_word())
 
 
 

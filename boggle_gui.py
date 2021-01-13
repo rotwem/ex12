@@ -1,4 +1,5 @@
 import tkinter as tki
+import tktimer
 import boggle_board_randomizer
 from boggle_Model import *
 
@@ -75,14 +76,15 @@ class Countdown:
     def __init__(self, root, timer):
         self.timer = timer
         self.root = root
-        self.label = tki.Label(self.root, font=("Courier", 30), bg=GAME_ORANGE_COLOR, width=23, relief="ridge")
-        self.label.pack()
+        self.countdown = tktimer.Countdown(root, beginning=GAME_DURATION, unit='second', precision=0)
+        self.countdown.pack()
+        self.countdown.start()
 
     def convert_seconds_to_minutes(self):
         pass
 
     def display_countdown(self):
-        self.label.configure(text=str(self.timer.remaining_time()))
+        self.countdown.configure(text=str(self.timer.remaining_time()))
         self.label.after(10, func=self.display_countdown())
 
 
@@ -97,7 +99,7 @@ root = tki.Tk()
 LG = LettersGrid(board, root)
 timer = Timer()
 CTD = Countdown(root, timer)
-CTD.display_countdown()
+root.mainloop()
 
 
 
