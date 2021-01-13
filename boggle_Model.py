@@ -19,6 +19,12 @@ class Timer:
             raise ValueError("Game was not started!")
         return int(self.game_duration - (time.time() - self.start_time))
 
+    def remaining_time_string(self):
+        remaining_time = self.remaining_time()
+        minutes = remaining_time // 60
+        seconds = remaining_time % 60
+        return str(minutes) + ":" + str(seconds)
+
     def start(self):
         self.start_time = time.time()
 
@@ -26,22 +32,16 @@ class Timer:
 class ScoreCalculator:
     """this class calculates the score for a list of words"""
 
-    def __init__(self):
-        self.words_dict = ex12_utils.load_words_dict(WORD_FILE_PATH)  # a list of valid words that can be found in board
-
     def get_score(self, word):
         """gets a word and calculates the score of that word.
         If the word is not in the dictionary, return 0. Otherwise, return len(word) ^ 2"""
-        if word in self.words_dict:
-            return len(word) ** 2
-        else:
-            return 0
+        return len(word) ** 2
 
-    def get_game_score(self, words_lst):
+    def get_game_score(self, words):
         """gets a list of str and calculates the score of that list:
         each first appearance of word receives a score calculated by len(word) ** 2
         each further appearance of word is not scored"""
-        word_set = set(words_lst)
+        word_set = set(words)
         score = 0
         for word in word_set:
             score += self.get_score(word)
@@ -80,49 +80,68 @@ class StepRecommender:
 
 class Game:
     """this class manages a boggle game"""
-    def __init__(self):
+    def __init__(self, board):
 
-        self.board = boggle_board_randomizer.randomize_board()
+        self.board = board
         self.timer = Timer()
         self.score_calculator = ScoreCalculator()
         self.steprecommender = StepRecommender()
 
-        self.game_score = 0
-        self.current_path = []
-        self.check_path = False
-        self.found_words = []
+        self.words_dict = ex12_utils.load_words_dict(WORD_FILE_PATH)  # a list of valid words that can be found in board
+        self.found_words = set()
 
-    def create_current_path(self, current_path):
-        """this function keeps receiving coordinates from user until they choose to check the word
-        (meaning the word in the current path)"""
-        while self.check_path is False:
-            possible_steps = self.steprecommender.get_valid_neighbors(current_path)
-            print("the valid next steps are", possible_steps)
-            input_str = input("what's your next step?")
-            next_step = (int(input_str[0]), int(input_str[1]))
-            if next_step in possible_steps:
-                current_path.append(next_step)
-            else:
-                print("the step isn't valid")
-            check_input = input("would you like to check this word? enter Y/N")
-            if check_input == "Y":
-                self.check_path = True
-        # print(self.current_path) # just a test
+    def add_new_word(self, word):
+        if word in self.words_dict:
+            self.found_words.add(word)
 
-    def from_current_path_get_word(self):
-        """from current_path returns a str according to the matching str on board"""
-        word = ""
-        for coord in self.current_path:
-            x, y = coord
-            word += self.board[x][y]
-        return word
+    def get_letter(self, row, col):
+        return self.board[row][col]
+
+    @property
+    def score(self):
+        return self.score_calculator.get_game_score(self.found_words)
+
+    @property
+    def remaining_game_time(self):
+        return self.timer.remaining_time()
 
 
 
-game = Game()
 
-game.create_current_path()
-print(game.from_current_path_get_word())
+
+
+
+    # def create_current_path(self, current_path):
+    #     """this function keeps receiving coordinates from user until they choose to check the word
+    #     (meaning the word in the current path)"""
+    #     while self.check_path is False:
+    #         possible_steps = self.steprecommender.get_valid_neighbors(current_path)
+    #         print("the valid next steps are", possible_steps)
+    #         input_str = input("what's your next step?")
+    #         next_step = (int(input_str[0]), int(input_str[1]))
+    #         if next_step in possible_steps:
+    #             current_path.append(next_step)
+    #         else:
+    #             print("the step isn't valid")
+    #         check_input = input("would you like to check this word? enter Y/N")
+    #         if check_input == "Y":
+    #             self.check_path = True
+    #     # print(self.current_path) # just a test
+
+    # def from_current_path_get_word(self):
+    #     """from current_path returns a str according to the matching str on board"""
+    #     word = ""
+    #     for coord in self.current_path:
+    #         x, y = coord
+    #         word += self.board[x][y]
+    #     return word
+
+
+
+# game = Game()
+#
+# game.create_current_path()
+# print(game.from_current_path_get_word())
 
 
 
