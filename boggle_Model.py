@@ -87,12 +87,15 @@ class Game:
     def add_new_word(self, word):
         if word in self.words_dict:
             self.found_words.add(word)
+            return True
+        return False
 
     def get_letter(self, row, col):
         return self.board[row][col]
 
     def start_game(self):
         self.timer.start()
+
 
     @property
     def score(self):
