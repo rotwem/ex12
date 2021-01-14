@@ -39,7 +39,11 @@ class BoggleGui:
         self.root = tki.Tk()  # main window of the game
         # these lines are for initializing the frames
         self.root.resizable(False, False)
-        self.upper_frame = tki.Frame(self.root, bg=NEUTRAL_BG, highlightbackground=GAME_BLACK_COLOR,
+        self.left_frame = tki.Frame(self.root)
+        self.left_frame.pack(side=tki.LEFT)
+        self.right_frame = tki.Frame(self.root)
+        self.right_frame.pack(side=tki.RIGHT)
+        self.upper_frame = tki.Frame(self.left_frame, bg=NEUTRAL_BG, highlightbackground=GAME_BLACK_COLOR,
                                      highlightthickness=3,
                                      width=10,
                                      height=10)  # frame for message (label) + start over (button) + check word (button)
@@ -49,17 +53,17 @@ class BoggleGui:
         self.message_label = tki.Label(self.upper_frame, bg=GAME_BLACK_COLOR, fg=GAME_ORANGE_COLOR,
                                        font=("Courier", 20), textvariable=self.message_val)
         self.message_label.pack(expand=True)
-        self.mid_frame = tki.Frame(self.root, bg=GAME_ORANGE_COLOR, highlightbackground=GAME_BLACK_COLOR,
+        self.mid_frame = tki.Frame(self.left_frame, bg=GAME_ORANGE_COLOR, highlightbackground=GAME_BLACK_COLOR,
                                    highlightthickness=3,
                                    width=10, height=10)  # frame for click to start (button) + timer and score(labels)
         self.mid_frame.pack()
-        self.grid_frame = tki.Frame(self.root, bg=NEUTRAL_BG, highlightbackground=GAME_BLACK_COLOR,
+        self.grid_frame = tki.Frame(self.left_frame, bg=NEUTRAL_BG, highlightbackground=GAME_BLACK_COLOR,
                                     highlightthickness=3,
                                     width=10, height=10)  # frame dor instructions (label) + letter grid (buttons grid)
         self.grid_frame.pack()
         self.instructions_label = tki.Label(self.grid_frame, text=INSTRUCTIONS, font=("Courier", 10))
         self.instructions_label.pack()
-        self.found_words_frame = tki.Frame(self.root, bg=NEUTRAL_BG, highlightbackground=GAME_BLACK_COLOR,
+        self.found_words_frame = tki.Frame(self.right_frame, bg=NEUTRAL_BG, highlightbackground=GAME_BLACK_COLOR,
                                            highlightthickness=3,
                                            width=10, height=10)  # frame for found words
         self.found_words_title = tki.Label(self.found_words_frame, font=("Courier", 15), text="WORDS YOU FOUND",
@@ -168,9 +172,21 @@ class BoggleGui:
         self.score_label.pack(side=tki.RIGHT, expand=True)
         self.start_over_button.pack(side=tki.LEFT)
         self.check_word_button.pack(side=tki.RIGHT)
-        self.found_words_frame.pack()
+        self.found_words_frame.pack(side=tki.TOP)
         self.found_words_title.pack()
         self.found_words_label.pack()
+        # while self.model.timer.remaining_time() > 0:
+        #     pass
+        # for button in self.buttons:
+        #     button.forget()
+        # self.score_label.forget()
+        # self.start_over_button.forget
+        # self.found_words_frame.forget()
+        # self.message_val.set(ENTRY)
+        # self.instructions_label["text"] = CLICK_TO_PLAY_AGAIN
+        # self.instructions_label.pack()
+        # self.click_to_play.pack()
+
 
     def check_word(self):
         if len(self.current_word) < 3:
@@ -218,7 +234,7 @@ board = [['B', 'A', 'C', 'Y'],
          ['C', 'E', 'QU', 'H']]
 # board = boggle_board_randomizer.randomize_board()
 
-model = Game(board=board)
+model = Game(board=boggle_board_randomizer.randomize_board())
 
 BG = BoggleGui(model)
 BG.run()
