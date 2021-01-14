@@ -225,8 +225,6 @@ class BoggleGui:
         # just for test
         # self.set_buttons_grid()
         self.root.mainloop()
-        print(self.current_path)
-
 
 board = [['B', 'A', 'C', 'Y'],
          ['E', 'R', 'A', 'D'],
