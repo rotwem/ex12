@@ -1,12 +1,5 @@
 # Ex.12: Boggle
 
-## Table of contents
-* [About] (#About)
-* [Prerequisites] (#Prerequisites)
-* [Dependencies] (#Dependencies)
-* [Special Features] (#Special Features)
-* [Authors] (#Authors)
-
 ## About
 This programme is for the game "Boggle", the rules of the original game are:
 Each round, the user have 3 minutes to find as many valid words as they can in a 4X4 board of random letters.
